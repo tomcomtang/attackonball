@@ -1,4 +1,3 @@
-
 var Phaser = Phaser || {};
 var AttackOnBall = AttackOnBall || {};
 
@@ -17,37 +16,37 @@ AttackOnBall.GameState.prototype.init = function (landIndex) {
 
 AttackOnBall.GameState.prototype.preload = function () {
   "use strict";
-  
+
 };
 
 AttackOnBall.GameState.prototype.create = function () {
   "use strict";
-  
-  // 为了地震效果，将world的边界扩张一下
+
+  // Expand world boundaries for earthquake effect
   var margin = 50;
-  // 四边都增加一个margin
+  // Add margin to all four sides
   var x = -margin;
   var y = -margin;
   var w = game.world.width + margin * 2;
   var h = game.world.height + margin * 2;
-  // 设置游戏区域
+  // Set game area
   game.world.setBounds(x, y, w, h);
 
   game.physics.startSystem(Phaser.Physics.ARCADE);
 
-  // 背景
+  // Background
   var bg = game.add.image(0, 0, 'bg');
 
-  // 地
+  // Ground
   this.land = game.add.sprite(0, HEIGHT - 204, 'land' + this.landIndex);
   game.physics.arcade.enable(this.land);
   this.land.body.setSize(1216, 184, 0, 20);
   this.land.body.immovable = true;
 
-  // 小人
+  // Character
   this.hero = game.add.sprite(WIDTH / 2, HEIGHT - 204 + 20);
 
-  // 小人 spine
+  // Character Spine
   var stickman = game.add.spine(0, 0, 'stickman');
   stickman.scale.setTo(1.5, 1.5);
 
@@ -56,7 +55,7 @@ AttackOnBall.GameState.prototype.create = function () {
   this.hero.stickman = stickman;
   this.hero.addChild(stickman);
 
-  // 影子
+  // Shadow
   this.shadow = game.add.sprite(0, stickman.bottom, 'shadow');
   this.shadow.anchor.setTo(0.5, 0.5);
   this.shadow.scale.x = stickman.width / this.shadow.width;
@@ -66,26 +65,26 @@ AttackOnBall.GameState.prototype.create = function () {
   game.physics.arcade.enable(this.hero);
   this.hero.anchor.setTo(0.5, 0.5);
   this.hero.body.setSize(80, 80, -40, -80);
-  // tap数组
+  // Tap array
   this.hero.taps = [];
 
   game.input.onDown.add(this.tapDown, this);
   game.input.onUp.add(this.tapUp, this);
 
-  // 球们
+  // Balls
   this.balls = game.add.group();
   this.balls.enableBody = true;
 
   this.ballTimer = game.time.events.loop(Phaser.Timer.SECOND * 1, this.generateBall, this);
   this.leftBall = true;
 
-  // 加分数字们
+  // Score Numbers
   this.numberItems = game.add.group();
   this.balls.enableBody = true;
 
   this.numberTimer = game.time.events.loop(Phaser.Timer.SECOND * 5, this.generateNumber, this);
 
-  // 时间条
+  // Time Bar
   this.gauge = game.add.sprite(0, 0, 'gauge');
   this.gauge.count = 0;
   this.gauge.scale.x = this.game.width / this.gauge.width;
@@ -93,16 +92,16 @@ AttackOnBall.GameState.prototype.create = function () {
   this.gaugeCropRect = new Phaser.Rectangle(0, 0, 0, this.gauge.height);
   this.gauge.crop(this.gaugeCropRect);
   this.gaugeHead = game.add.sprite(0, 0, 'gaugeHead');
-  game.time.events.loop(Phaser.Timer.SECOND * 0.1, function() {
+  game.time.events.loop(Phaser.Timer.SECOND * 0.1, function () {
     this.gaugeHead.tint = Math.random() * 0xffffff;
   }, this);
 
-  this.timeTimer = game.time.events.loop(Phaser.Timer.SECOND * 0.1, function() {
+  this.timeTimer = game.time.events.loop(Phaser.Timer.SECOND * 0.1, function () {
     this.gauge.count++;
     this.updateTimeNumber();
   }, this);
 
-  // 时间数字
+  // Time Numbers
   this.timeIntegerText = game.add.bitmapText(this.gaugeHead.x, this.gaugeHead.bottom, 'numberTime', '0', 32);
   this.timeIntegerText.tint = 0x000000;
   this.dot = game.add.image(this.timeIntegerText.right + 2, this.gaugeHead.bottom + this.timeIntegerText.height - 5, 'white4');
@@ -110,13 +109,13 @@ AttackOnBall.GameState.prototype.create = function () {
   this.timeDecimalText = game.add.bitmapText(this.dot.right, this.gaugeHead.bottom, 'numberTime', '00', 32);
   this.timeDecimalText.tint = 0x000000;
 
-  // 更改大地颜色
-  this.floorTimer = game.time.events.loop(Phaser.Timer.SECOND * 10, function() {
+  // Change Ground Color
+  this.floorTimer = game.time.events.loop(Phaser.Timer.SECOND * 10, function () {
     this.land.loadTexture("landWhite");
-    game.time.events.repeat(Phaser.Timer.SECOND * 0.1, 10, function() {
+    game.time.events.repeat(Phaser.Timer.SECOND * 0.1, 10, function () {
       this.land.tint = Math.random() * 0xffffff;
     }, this);
-    game.time.events.add(Phaser.Timer.SECOND * 1, function() {
+    game.time.events.add(Phaser.Timer.SECOND * 1, function () {
       this.land.loadTexture("land" + game.rnd.integerInRange(0, 5));
     }, this);
   }, this);
@@ -125,8 +124,8 @@ AttackOnBall.GameState.prototype.create = function () {
 AttackOnBall.GameState.prototype.update = function () {
   "use strict";
   // 限制小人移动范围
-  if(this.hero.x < 0) {this.hero.x = 0;}
-  if(this.hero.x > WIDTH) {this.hero.x = WIDTH;}
+  if (this.hero.x < 0) { this.hero.x = 0; }
+  if (this.hero.x > WIDTH) { this.hero.x = WIDTH; }
   game.physics.arcade.collide(this.land, this.balls);
   game.physics.arcade.collide(this.land, this.bloodEmitter);
   game.physics.arcade.collide(this.land, this.deadPartsEmitter);
@@ -147,8 +146,8 @@ AttackOnBall.GameState.prototype.render = function () {
   // }, this);
 };
 
-AttackOnBall.GameState.prototype.tapDown = function(pointer) {
-  if(pointer.x > WIDTH / 2) {
+AttackOnBall.GameState.prototype.tapDown = function (pointer) {
+  if (pointer.x > WIDTH / 2) {
     this.hero.dir = 1;
     this.hero.scale.x = 1;
     this.hero.body.velocity.x = heroSpeed;
@@ -158,33 +157,33 @@ AttackOnBall.GameState.prototype.tapDown = function(pointer) {
     this.hero.body.velocity.x = -heroSpeed;
   }
   // 记录pointer.id
-  this.hero.taps.push({id: pointer.id, dir: this.hero.dir});
+  this.hero.taps.push({ id: pointer.id, dir: this.hero.dir });
   var randomIndex = game.rnd.integerInRange(0, 4);
-  if(randomIndex == 0) {
+  if (randomIndex == 0) {
     this.hero.stickman.setAnimationByName(0, 'Run0', true);
-  } else if(randomIndex == 1) {
+  } else if (randomIndex == 1) {
     this.hero.stickman.setAnimationByName(0, 'Run1', true);
-  } else if(randomIndex == 2) {
+  } else if (randomIndex == 2) {
     this.hero.stickman.setAnimationByName(0, 'Run2', true);
-  } else if(randomIndex == 3) {
+  } else if (randomIndex == 3) {
     this.hero.stickman.setAnimationByName(0, 'Run3', true);
-  } else if(randomIndex == 4) {
+  } else if (randomIndex == 4) {
     this.hero.stickman.setAnimationByName(0, 'RunSmile', true);
   }
 }
 
-AttackOnBall.GameState.prototype.tapUp = function(pointer) {
+AttackOnBall.GameState.prototype.tapUp = function (pointer) {
   // 把相应pointer.id去除
-  for(var i = this.hero.taps.length - 1; i >= 0; i--) {
-    if(this.hero.taps[i].id == pointer.id) {
+  for (var i = this.hero.taps.length - 1; i >= 0; i--) {
+    if (this.hero.taps[i].id == pointer.id) {
       this.hero.taps.splice(i, 1);
     }
   }
-  if(this.hero.taps.length == 0) {
+  if (this.hero.taps.length == 0) {
     this.hero.dir = 0;
     this.hero.body.velocity.x = 0;
     var randomIndex = game.rnd.integerInRange(0, 1);
-    if(randomIndex == 0) {
+    if (randomIndex == 0) {
       this.hero.stickman.setAnimationByName(0, 'Idle', true);
     } else {
       this.hero.stickman.setAnimationByName(0, 'IdleSmile', true);
@@ -196,7 +195,7 @@ AttackOnBall.GameState.prototype.tapUp = function(pointer) {
   }
 }
 
-AttackOnBall.GameState.prototype.dead = function(hero, ball) {
+AttackOnBall.GameState.prototype.dead = function (hero, ball) {
 
   // 血块序列帧动画，单张图片形式播放
   this.playEffectBlood(hero);
@@ -225,14 +224,14 @@ AttackOnBall.GameState.prototype.dead = function(hero, ball) {
 
 }
 
-AttackOnBall.GameState.prototype.playEffectBlood = function(hero) {
-  
+AttackOnBall.GameState.prototype.playEffectBlood = function (hero) {
+
   var count = 0;
   var effectBlood = game.add.sprite(hero.x, hero.y - 45, 'effectBlood' + count);
   effectBlood.anchor.setTo(0.5, 0.5);
 
-  var timer = game.time.events.loop(Phaser.Timer.SECOND * 0.05, function() {
-    if(count < 10) {
+  var timer = game.time.events.loop(Phaser.Timer.SECOND * 0.05, function () {
+    if (count < 10) {
       count++;
       effectBlood.loadTexture('effectBlood' + count);
     } else {
@@ -242,8 +241,8 @@ AttackOnBall.GameState.prototype.playEffectBlood = function(hero) {
 
 }
 
-AttackOnBall.GameState.prototype.playParticleBlood = function(hero) {
-  
+AttackOnBall.GameState.prototype.playParticleBlood = function (hero) {
+
   this.bloodEmitter = game.add.emitter(0, 0, 50);
 
   this.bloodEmitter.makeParticles('blood', 0, 50, true);
@@ -267,7 +266,7 @@ AttackOnBall.GameState.prototype.playParticleBlood = function(hero) {
 
 }
 
-AttackOnBall.GameState.prototype.playDeadParts = function(hero) {
+AttackOnBall.GameState.prototype.playDeadParts = function (hero) {
 
   this.deadPartsEmitter = game.add.emitter(0, 0, 8);
 
@@ -289,27 +288,27 @@ AttackOnBall.GameState.prototype.playDeadParts = function(hero) {
 
 }
 
-AttackOnBall.GameState.prototype.earthQuake = function() {
+AttackOnBall.GameState.prototype.earthQuake = function () {
   // 振幅
   var rumbleOffset = 10;
   // tween参数
-  var propertiesX = { x : game.camera.x - rumbleOffset };
-  var propertiesY = { y : game.camera.y - rumbleOffset };
+  var propertiesX = { x: game.camera.x - rumbleOffset };
+  var propertiesY = { y: game.camera.y - rumbleOffset };
   // 给camera tween就是地震效果
   game.add.tween(game.camera).to(propertiesX, 110, Phaser.Easing.Bounce.InOut, true, 0, 4, true);
   game.add.tween(game.camera).to(propertiesY, 120, Phaser.Easing.Bounce.InOut, true, 0, 4, true);
 }
 
-AttackOnBall.GameState.prototype.redBorder = function() {
+AttackOnBall.GameState.prototype.redBorder = function () {
   this.effectHit = game.add.image(0, 0, 'effectHit');
-  this.effectHit.scale.setTo(game.width/this.effectHit.width, game.height/this.effectHit.height);
+  this.effectHit.scale.setTo(game.width / this.effectHit.width, game.height / this.effectHit.height);
   this.effectHit.alpha = 0;
-  game.add.tween(this.effectHit).to({alpha: 1}, 480, Phaser.Easing.Bounce.InOut, true, 0, 1, true);
+  game.add.tween(this.effectHit).to({ alpha: 1 }, 480, Phaser.Easing.Bounce.InOut, true, 0, 1, true);
 }
 
-AttackOnBall.GameState.prototype.generateBall = function() {
+AttackOnBall.GameState.prototype.generateBall = function () {
   var x, dir;
-  if(this.leftBall) {
+  if (this.leftBall) {
     x = -70;
     dir = 1;
   } else {
@@ -319,7 +318,7 @@ AttackOnBall.GameState.prototype.generateBall = function() {
   this.leftBall = !this.leftBall;
   var ball = this.balls.getFirstExists(false);
   var rate = game.rnd.realInRange(1.2, 1.5);
-  if(ball) {
+  if (ball) {
     ball.reset(x, game.rnd.integerInRange(-50, 150));
   } else {
     ball = game.make.sprite(x, game.rnd.integerInRange(-50, 150), 'ball' + game.rnd.integerInRange(0, 4));
@@ -334,7 +333,7 @@ AttackOnBall.GameState.prototype.generateBall = function() {
     var shadow = game.add.sprite(0, HEIGHT - this.land.height + 20, 'shadow');
     shadow.anchor.setTo(0.5, 0.5);
     ball.shadow = shadow;
-    ball.update = function() {
+    ball.update = function () {
       ball.shadow.x = ball.x;
       ball.shadow.scale.x = 0.5 + (ball.y / (HEIGHT - this.land.height + 20)) / 2;
       ball.shadow.alpha = 0.5 + (ball.y / (HEIGHT - this.land.height + 20)) / 2;
@@ -345,9 +344,9 @@ AttackOnBall.GameState.prototype.generateBall = function() {
   ball.body.velocity.x = dir * game.rnd.integerInRange(150, 200);
 }
 
-AttackOnBall.GameState.prototype.generateNumber = function() {
+AttackOnBall.GameState.prototype.generateNumber = function () {
   var numberItem = this.numberItems.getFirstExists(false);
-  if(numberItem) {
+  if (numberItem) {
     numberItem.reset(game.rnd.integerInRange(0, game.width), -20);
     numberItem.angle = game.rnd.angle();
     numberItem.loadTexture('numberItem' + game.rnd.integerInRange(1, 4));
@@ -358,20 +357,20 @@ AttackOnBall.GameState.prototype.generateNumber = function() {
     numberItem.anchor.setTo(0.5, 0.5);
     numberItem.body.moves = true;
     numberItem.body.bounce.y = 0.2;
-    numberItem.timer = game.time.events.loop(Phaser.Timer.SECOND * 0.2, function() {
+    numberItem.timer = game.time.events.loop(Phaser.Timer.SECOND * 0.2, function () {
       numberItem.tint = Math.random() * 0xffffff
     }, this);
     this.numberItems.add(numberItem);
   }
-  numberItem.update = function() {
-    if(numberItem.body.velocity.y > 1) {
+  numberItem.update = function () {
+    if (numberItem.body.velocity.y > 1) {
       numberItem.angle += 1;
     }
   }
   numberItem.body.gravity.y = 950;
 }
 
-AttackOnBall.GameState.prototype.updateTimeNumber = function(a) {
+AttackOnBall.GameState.prototype.updateTimeNumber = function (a) {
   this.gaugeCropRect.width = (this.gauge.count % 100 + 1) / 100 * (game.width - 80);
   this.gauge.crop(this.gaugeCropRect);
   this.gaugeHead.x = this.gaugeCropRect.width * this.gauge.scale.x - 10;
@@ -380,33 +379,33 @@ AttackOnBall.GameState.prototype.updateTimeNumber = function(a) {
   this.timeIntegerText.text = Math.floor(this.gauge.count / 10) + "";
   this.timeDecimalText.text = this.gauge.count % 10;
   this.timeIntegerText.x = this.gaugeHead.x - (this.timeIntegerText.width + this.dot.width + this.timeDecimalText.width);
-  if(this.timeIntegerText.x < 0) {
+  if (this.timeIntegerText.x < 0) {
     this.timeIntegerText.x = 0;
   }
   this.dot.x = this.timeIntegerText.right + 2;
   this.timeDecimalText.x = this.dot.right;
 }
 
-AttackOnBall.GameState.prototype.collectNumber = function(hero, numberItem) {
+AttackOnBall.GameState.prototype.collectNumber = function (hero, numberItem) {
   numberItem.body.gravity.y = 0;
-  numberItem.update = function() {
+  numberItem.update = function () {
     game.physics.arcade.moveToObject(numberItem, this.gaugeHead, 1000);
-    if(numberItem.y < 10) {
+    if (numberItem.y < 10) {
       numberItem.kill();
-      numberItem.update = function() {};
+      numberItem.update = function () { };
       var reg = /(\d+)/gi;
       var res = reg.exec(numberItem.key);
       var number = parseInt(res[1]);
       this.gauge.count += number * 10;
       this.updateTimeNumber();
-      game.time.events.repeat(Phaser.Timer.SECOND * 0.1, 10, function() {
+      game.time.events.repeat(Phaser.Timer.SECOND * 0.1, 10, function () {
         this.gauge.tint = Math.random() * 0xffffff;
       }, this);
     }
   }.bind(this);
 }
 
-AttackOnBall.GameState.prototype.over = function() {
+AttackOnBall.GameState.prototype.over = function () {
   // 白色遮罩
   this.whiteMask = game.add.graphics(0, 0);
   this.whiteMask.beginFill(0xFFFFFF, 0.8);
@@ -418,7 +417,7 @@ AttackOnBall.GameState.prototype.over = function() {
   this.buttonGamecenter.inputEnabled = true;
   this.buttonGamecenter.events.onInputDown.add(this.buttonDown, this);
   this.buttonGamecenter.events.onInputUp.add(this.buttonUp, this);
-  game.add.tween(this.buttonGamecenter).to({y: HEIGHT - 304}, 500, Phaser.Easing.Bounce.Out, true);
+  game.add.tween(this.buttonGamecenter).to({ y: HEIGHT - 304 }, 500, Phaser.Easing.Bounce.Out, true);
 
   // 右边按钮
   this.buttonShare = game.add.image(WIDTH - 120, HEIGHT + 304, 'buttonShare0');
@@ -426,7 +425,7 @@ AttackOnBall.GameState.prototype.over = function() {
   this.buttonShare.inputEnabled = true;
   this.buttonShare.events.onInputDown.add(this.buttonDown, this);
   this.buttonShare.events.onInputUp.add(this.buttonUp, this);
-  game.add.tween(this.buttonShare).to({y: HEIGHT - 304}, 500, Phaser.Easing.Bounce.Out, true);
+  game.add.tween(this.buttonShare).to({ y: HEIGHT - 304 }, 500, Phaser.Easing.Bounce.Out, true);
 
   // 中间按钮
   this.buttonStart = game.add.sprite(WIDTH / 2, HEIGHT + 284, 'buttonPlay0');
@@ -434,11 +433,11 @@ AttackOnBall.GameState.prototype.over = function() {
   this.buttonStart.inputEnabled = true;
   this.buttonStart.events.onInputDown.add(this.buttonDown, this);
   this.buttonStart.events.onInputUp.add(this.buttonUp, this);
-  game.add.tween(this.buttonStart).to({y: HEIGHT - 304}, 500, Phaser.Easing.Bounce.Out, true, 200);
+  game.add.tween(this.buttonStart).to({ y: HEIGHT - 304 }, 500, Phaser.Easing.Bounce.Out, true, 200);
 
   // best
   var bestScore = window.localStorage && window.localStorage.getItem("bestScore");
-  if(bestScore && bestScore > this.gauge.count) {
+  if (bestScore && bestScore > this.gauge.count) {
     this.bestScore = bestScore;
   } else {
     this.bestScore = this.gauge.count;
@@ -460,7 +459,7 @@ AttackOnBall.GameState.prototype.over = function() {
   this.bestGroup.addChild(this.bestIntegerText);
   this.bestGroup.addChild(this.bestDot);
   this.bestGroup.addChild(this.bestDecimalText);
-  game.add.tween(this.bestGroup).to({x: WIDTH / 2 - 150 - (this.bestDecimalText.right - this.bestIntegerText.left)}, 500, Phaser.Easing.Cubic.Out, true, 200);
+  game.add.tween(this.bestGroup).to({ x: WIDTH / 2 - 150 - (this.bestDecimalText.right - this.bestIntegerText.left) }, 500, Phaser.Easing.Cubic.Out, true, 200);
 
   // your
   this.yourScore = this.gauge.count;
@@ -480,47 +479,47 @@ AttackOnBall.GameState.prototype.over = function() {
   this.yourGroup.addChild(this.yourIntegerText);
   this.yourGroup.addChild(this.yourDot);
   this.yourGroup.addChild(this.yourDecimalText);
-  game.time.events.loop(Phaser.Timer.SECOND * 0.1, function() {
+  game.time.events.loop(Phaser.Timer.SECOND * 0.1, function () {
     var color = Math.random() * 0xffffff;
     this.yourIntegerText.tint = color;
     this.yourDot.tint = color;
     this.yourDecimalText.tint = color;
   }, this);
-  game.add.tween(this.yourGroup).to({x: WIDTH / 2 + 150}, 500, Phaser.Easing.Cubic.Out, true, 200);
+  game.add.tween(this.yourGroup).to({ x: WIDTH / 2 + 150 }, 500, Phaser.Easing.Cubic.Out, true, 200);
 }
 
-AttackOnBall.GameState.prototype.buttonDown = function(button, point) {
+AttackOnBall.GameState.prototype.buttonDown = function (button, point) {
   var len = button.key.length;
-  var mainKey = button.key.substring(0, len-1);
+  var mainKey = button.key.substring(0, len - 1);
   button.loadTexture(mainKey + '1');
-  button.animTween = game.add.tween(button.scale).to({x: 1.1, y: 1.1}, 100, "Linear", true);
+  button.animTween = game.add.tween(button.scale).to({ x: 1.1, y: 1.1 }, 100, "Linear", true);
 }
 
-AttackOnBall.GameState.prototype.buttonUp = function(button, point) {
+AttackOnBall.GameState.prototype.buttonUp = function (button, point) {
   var len = button.key.length;
-  var mainKey = button.key.substring(0, len-1);
+  var mainKey = button.key.substring(0, len - 1);
   button.animTween.stop();
   button.loadTexture(mainKey + '0');
   button.scale.setTo(1, 1);
 
-  if(mainKey === "buttonGamecenter") {
+  if (mainKey === "buttonGamecenter") {
     this.onGamecenter();
-  } else if(mainKey === "buttonShare") {
+  } else if (mainKey === "buttonShare") {
     this.onShare();
-  } else if(mainKey === "buttonPlay") {
+  } else if (mainKey === "buttonPlay") {
     this.onPlay();
   }
 }
 
-AttackOnBall.GameState.prototype.onGamecenter = function() {
+AttackOnBall.GameState.prototype.onGamecenter = function () {
   console.log('onGamecenter');
 }
 
-AttackOnBall.GameState.prototype.onShare = function() {
+AttackOnBall.GameState.prototype.onShare = function () {
   console.log('onShare');
 }
 
-AttackOnBall.GameState.prototype.onPlay = function() {
+AttackOnBall.GameState.prototype.onPlay = function () {
   game.state.start("MenuState", true, false, this.bestScore);
 }
 

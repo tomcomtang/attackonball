@@ -1,4 +1,3 @@
-
 var Phaser = Phaser || {};
 var AttackOnBall = AttackOnBall || {};
 
@@ -33,36 +32,36 @@ AttackOnBall.PreloadState.prototype.preload = function () {
   game.load.bitmapFont('numberTime', 'assets/NumberTime.png', 'assets/NumberTime.xml');
   game.load.bitmapFont('numberScoreMain', 'assets/NumberScoreMain.png', 'assets/NumberScoreMain.xml');
   game.load.bitmapFont('numberScoreEnd', 'assets/NumberScoreEnd.png', 'assets/NumberScoreEnd.xml');
-  for(var i=0; i<=1; i++) {
+  for (var i = 0; i <= 1; i++) {
     game.load.image('buttonGamecenter' + i, 'assets/ButtonGamecenter' + i + '.png');
     game.load.image('buttonPlay' + i, 'assets/ButtonPlay' + i + '.png');
     game.load.image('buttonRate' + i, 'assets/ButtonRate' + i + '.png');
     game.load.image('buttonShare' + i, 'assets/ButtonShare' + i + '.png');
   }
-  for(var i=1; i<=4; i++) {
+  for (var i = 1; i <= 4; i++) {
     game.load.image('numberItem' + i, 'assets/NumberItem' + i + '.png');
   }
-  for(var i=0; i<=4; i++) {
+  for (var i = 0; i <= 4; i++) {
     game.load.image('ball' + i, 'assets/Ball' + i + '.png');
   }
-  for(var i=0; i<=5; i++) {
+  for (var i = 0; i <= 5; i++) {
     game.load.image('land' + i, 'assets/Land' + i + '.png');
   }
-  for(var i=0; i<=7; i++) {
+  for (var i = 0; i <= 7; i++) {
     game.load.image('deadParts' + i, 'assets/DeadParts' + i + '.png');
   }
-  for(var i=0; i<=10; i++) {
+  for (var i = 0; i <= 10; i++) {
     game.load.image('effectBlood' + i, 'assets/EffectBlood' + i + '.png');
   }
 
-  // 界面提示
+  // Interface Hint
   var style = { font: "bold 32px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
-  var text = game.add.text(0, 0, "超好玩的游戏，请耐心等待加载(0%)", style);
+  var text = game.add.text(0, 0, "Awesome game, please wait for loading (0%)", style);
   text.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2);
   text.setTextBounds(0, 0, WIDTH, HEIGHT);
 
-  game.load.onFileComplete.add(function(process) {
-    text.text = "超好玩的游戏，请耐心等待加载(" + process + "%)";
+  game.load.onFileComplete.add(function (process) {
+    text.text = "Awesome game, please wait for loading (" + process + "%)";
   });
 
 };
